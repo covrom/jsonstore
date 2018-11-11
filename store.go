@@ -81,7 +81,7 @@ func (js *jsonStore) Context() context.Context {
 	return js.ctx
 }
 
-type storeCancel struct {
+type SyncStore struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 	wg     *sync.WaitGroup
@@ -89,9 +89,9 @@ type storeCancel struct {
 	store  Store
 }
 
-func NewStoreCancel(store Store) *storeCancel {
+func NewSyncStore(store Store) *SyncStore {
 	ictx, cancel := context.WithCancel(store.Context())
-	return &storeCancel{
+	return &SyncStore{
 		ctx:    ictx,
 		cancel: cancel,
 		wg:     &sync.WaitGroup{},
@@ -101,7 +101,7 @@ func NewStoreCancel(store Store) *storeCancel {
 }
 
 // data must contain initial value for store it in json file (if not exists)
-func NewJsonStoreCancel(ctx context.Context, fn string, data Value, tickSave *time.Ticker, saveOnStore bool) (*storeCancel, error) {
+func NewJsonSyncStore(ctx context.Context, fn string, data Value, tickSave *time.Ticker, saveOnStore bool) (*SyncStore, error) {
 	js := &jsonStore{
 		mu:          &sync.Mutex{},
 		ctx:         ctx,
@@ -113,7 +113,7 @@ func NewJsonStoreCancel(ctx context.Context, fn string, data Value, tickSave *ti
 	if err != nil {
 		return nil, err
 	}
-	sc := NewStoreCancel(js)
+	sc := NewSyncStore(js)
 	if tickSave != nil {
 		sc.Go(func(dn <-chan struct{}, st Store) {
 			for {
@@ -129,7 +129,7 @@ func NewJsonStoreCancel(ctx context.Context, fn string, data Value, tickSave *ti
 	return sc, nil
 }
 
-func (sc *storeCancel) Close() {
+func (sc *SyncStore) Close() {
 	sc.once.Do(func() {
 		sc.cancel()
 		sc.wg.Wait()
@@ -138,19 +138,19 @@ func (sc *storeCancel) Close() {
 	})
 }
 
-func (sc *storeCancel) Context() context.Context {
+func (sc *SyncStore) Context() context.Context {
 	return sc.ctx
 }
 
-func (sc *storeCancel) Done() <-chan struct{} {
+func (sc *SyncStore) Done() <-chan struct{} {
 	return sc.ctx.Done()
 }
 
-func (sc *storeCancel) Store() Store {
+func (sc *SyncStore) Store() Store {
 	return sc.store
 }
 
-func (sc *storeCancel) Go(f func(done <-chan struct{}, store Store)) {
+func (sc *SyncStore) Go(f func(done <-chan struct{}, store Store)) {
 	sc.wg.Add(1)
 	go func(ctx context.Context, wg *sync.WaitGroup, store Store) {
 		defer wg.Done()

@@ -19,14 +19,14 @@ func (cf *Config) Clone() Value {
 		B: cf.B,
 	}
 }
-func TestNewJsonStoreCancel(t *testing.T) {
+func TestNewJsonSyncStore(t *testing.T) {
 
-	tmpfn := "/tmp/testJsonStoreCancel.json"
+	tmpfn := "/tmp/testJsonSyncStore.json"
 
 	str := &Config{"aaa", "bbb"}
-	store, err := NewJsonStoreCancel(context.Background(), "/tmp/testJsonStoreCancel.json", str, time.NewTicker(time.Second), false)
+	store, err := NewJsonSyncStore(context.Background(), "/tmp/testJsonSyncStore.json", str, time.NewTicker(time.Second), false)
 	if err != nil {
-		t.Errorf("NewJsonStoreCancel() error = %v", err)
+		t.Errorf("NewJsonSyncStore() error = %v", err)
 		return
 	}
 
@@ -61,7 +61,7 @@ func TestNewJsonStoreCancel(t *testing.T) {
 	<-time.After(3 * time.Second)
 	b, err := ioutil.ReadFile(tmpfn)
 	if err != nil {
-		t.Errorf("NewJsonStoreCancel() error = %v", err)
+		t.Errorf("NewJsonSyncStore() error = %v", err)
 		return
 	}
 	fmt.Println(string(b))
