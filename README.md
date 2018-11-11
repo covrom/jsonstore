@@ -3,7 +3,7 @@ Json store with atomic.Value copy on write and context closing
 
 Usage:
 
-```
+```go
 type Config struct{
     A,B string
 }
