@@ -24,7 +24,7 @@ func TestNewJsonStoreCancel(t *testing.T) {
 	tmpfn := "/tmp/testJsonStoreCancel.json"
 
 	str := &Config{"aaa", "bbb"}
-	store, err := NewJsonStoreCancel(context.Background(), "/tmp/testJsonStoreCancel.json", str, time.NewTicker(time.Second))
+	store, err := NewJsonStoreCancel(context.Background(), "/tmp/testJsonStoreCancel.json", str, time.NewTicker(time.Second), false)
 	if err != nil {
 		t.Errorf("NewJsonStoreCancel() error = %v", err)
 		return

@@ -18,7 +18,7 @@ func (cf *Config) Clone() jsonstore.Value{
 tmpfn := "/tmp/testJsonStoreCancel.json"
 
 str := &Config{"aaa", "bbb"}
-store, err := NewJsonStoreCancel(context.Background(), "/tmp/testJsonStoreCancel.json", str, time.NewTicker(time.Second))
+store, err := NewJsonStoreCancel(context.Background(), "/tmp/testJsonStoreCancel.json", str, time.NewTicker(time.Second), false)
 if err != nil {
     fmt.Printf("NewJsonStoreCancel() error = %v", err)
     return
